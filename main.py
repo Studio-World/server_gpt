@@ -1,5 +1,5 @@
-from fastapi import FastAPI, Request, HTTPException, Query, Path
-from fastapi.responses import JSONResponse, FileResponse, StreamingResponse
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import sqlite3
 import os
@@ -12,7 +12,6 @@ import json
 from playwright.async_api import async_playwright
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
 
 # Discord opcional
 try:
@@ -49,6 +48,12 @@ ZAPIER_SECRET = os.getenv("ZAPIER_SECRET", "zapier123")
 ZAPIER_ACTION_URL = "https://server-apig-gpt-1.onrender.com/zapier/trigger"
 ZAPIER_TRIGGER_WEBHOOK = "https://server-apig-gpt-1.onrender.com/zapier/webhook-trigger"
 
+# URLs do seu domínio personalizado (ajuste se necessário)
+PUBLIC_DOMAIN = "https://carlosdev.app.br"
+GITHUB_PLUGIN_URL = f"{PUBLIC_DOMAIN}/github-ai-plugin.json"
+GITHUB_YAML_URL = f"{PUBLIC_DOMAIN}/api.github.com.yaml"
+GOOGLE_DRIVE_YAML_URL = f"{PUBLIC_DOMAIN}/google-drive-api.yaml"
+
 # === DATABASE INIT ===
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -75,12 +80,16 @@ def root():
 
 @app.get("/.well-known/api-config")
 def api_config():
+    """
+    Retorna as URLs absolutas dos plugins e arquivos OpenAPI hospedados no domínio público.
+    """
     return {
         "zapier_trigger": ZAPIER_TRIGGER_WEBHOOK,
         "zapier_action": ZAPIER_ACTION_URL,
-        "github_spec": "/github/github-api.yaml",
-        "drive_spec": "/google-drive/google-drive-api.yaml",
-        "plugin_version": "1.0.0"
+        "github_spec": GITHUB_YAML_URL,
+        "drive_spec": GOOGLE_DRIVE_YAML_URL,
+        "plugin_version": "1.0.0",
+        "plugin_manifest": GITHUB_PLUGIN_URL
     }
 
 # === CHATLOG ===
@@ -318,24 +327,9 @@ async def zapier_webhook_trigger(request: Request):
         "dados": payload
     }])
 
-# === PLUGIN SPECS (YAML + JSON) ===
-@app.get("/github/github-api.yaml")
-def github_yaml(): return FileResponse("github/github-api.yaml")
-
-@app.get("/github/github-ai-plugin.json")
-def github_json(): return FileResponse("github/github-ai-plugin.json")
-
-@app.get("/azure-devops/azure-devops-api.yaml")
-def azure_yaml(): return FileResponse("azure-devops/azure-devops-api.yaml")
-
-@app.get("/azure-devops/azure-ai-plugin.json")
-def azure_json(): return FileResponse("azure-devops/azure-ai-plugin.json")
-
-@app.get("/google-drive/google-drive-api.yaml")
-def get_google_spec(): return FileResponse("google-drive/google-drive-api.yaml")
-
-@app.get("/discord/discord-api.yaml")
-def get_discord_spec(): return FileResponse("discord/discord-api.yaml")
+# === INTEGRAÇÃO COM ESPECIFICAÇÕES DO PLUGIN NO DOMÍNIO PÚBLICO ===
+# Endpoints locais de arquivos de spec e plugin removidos.
+# Use sempre os links públicos (expostos acima) em integrações e respostas da API.
 
 # === DOCKER: SAVE CONTAINER STATE TO SSD ===
 @app.post("/docker/save")
