@@ -1,0 +1,169 @@
+
+openapi: 3.1.0
+info:
+  title: Google Drive API (Full Access)
+  version: 2.0.0
+  description: API para acessar e gerenciar completamente arquivos do Google Drive
+servers:
+  - url: https://www.googleapis.com
+paths:
+  /drive/v3/files:
+    get:
+      operationId: listFiles
+      summary: Lista arquivos do Google Drive
+      parameters:
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+        - name: fields
+          in: query
+          schema:
+            type: string
+            default: files(id,name,mimeType)
+      responses:
+        '200':
+          description: Lista de arquivos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  files:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        mimeType:
+                          type: string
+
+  /drive/v3/files/{fileId}:
+    get:
+      operationId: getFile
+      summary: Retorna metadados de um arquivo
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          schema:
+            type: string
+            default: id,name,mimeType
+      responses:
+        '200':
+          description: Metadados retornados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  mimeType:
+                    type: string
+
+    delete:
+      operationId: deleteFile
+      summary: Deleta um arquivo
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Arquivo deletado com sucesso
+
+    patch:
+      operationId: updateFile
+      summary: Atualiza metadados de um arquivo
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                parents:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Arquivo atualizado
+
+  /drive/v3/files/{fileId}/download:
+    get:
+      operationId: downloadFile
+      summary: Baixa o conteúdo binário de um arquivo
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Conteúdo do arquivo
+          content:
+            application/octet-stream: {}
+
+  /upload/drive/v3/files:
+    post:
+      operationId: uploadFile
+      summary: Faz upload de um arquivo com metadados
+      parameters:
+        - name: uploadType
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [multipart]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                metadata:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Upload feito com sucesso
+
+components:
+  securitySchemes:
+    googleOAuth:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/v2/auth
+          tokenUrl: https://oauth2.googleapis.com/token
+          scopes:
+            https://www.googleapis.com/auth/drive: Acesso completo ao Google Drive
+  schemas: {}
+security:
+  - googleOAuth:
+      - https://www.googleapis.com/auth/drive

@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "API do DAN",
+  "name_for_model": "api_do_dan",
+  "description_for_human": "Integração da API do DAN com o ChatGPT",
+  "description_for_model": "API multifuncional que permite ao ChatGPT gerar respostas, acessar o Google Drive, interagir com o GitHub, Azure DevOps, executar automações via Playwright e Selenium, e realizar integrações com Zapier.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://server-apig-gpt-1.onrender.com/.well-known/openapi.yaml",
+    "is_user_authenticated": false
+  },
+  "logo_url": "https://server-apig-gpt-1.onrender.com/logo.png",
+  "contact_email": "carlosmb2@mail.com",
+  "legal_info_url": "https://server-apig-gpt-1.onrender.com/legal"
+}

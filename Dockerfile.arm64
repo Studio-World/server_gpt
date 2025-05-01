@@ -1,0 +1,91 @@
+FROM python:3.13-slim
+
+# ==== Dependências de sistema ====
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    curl \
+    unzip \
+    xvfb \
+    libgconf-2-4 \
+    libxss1 \
+    libnss3 \
+    libnspr4 \
+    libasound2 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxrandr2 \
+    xdg-utils \
+    fonts-liberation \
+    dbus \
+    xauth \
+    xvfb \
+    x11vnc \
+    tigervnc-tools \
+    supervisor \
+    net-tools \
+    procps \
+    git \
+    python3-numpy \
+    fontconfig \
+    fonts-dejavu \
+    fonts-dejavu-core \
+    fonts-dejavu-extra \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# ==== noVNC ====
+RUN git clone https://github.com/novnc/noVNC.git /opt/novnc && \
+    git clone https://github.com/novnc/websockify /opt/novnc/utils/websockify && \
+    ln -s /opt/novnc/vnc.html /opt/novnc/index.html
+
+# ==== Platform para ARM64 ====
+ARG TARGETPLATFORM=linux/arm64
+
+# ==== Diretório de trabalho ====
+WORKDIR /app
+
+# ==== Requisitos Python ====
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
+
+# ==== Instala Playwright (browser-use depende) ====
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+RUN PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 pip install playwright && \
+    playwright install --with-deps chromium
+
+# ==== Carga do projeto ====
+COPY . .
+
+# ==== Variáveis de ambiente ====
+ENV PYTHONUNBUFFERED=1
+ENV BROWSER_USE_LOGGING_LEVEL=info
+ENV CHROME_PATH=/ms-playwright/chromium-*/chrome-linux/chrome
+ENV ANONYMIZED_TELEMETRY=false
+ENV DISPLAY=:99
+ENV RESOLUTION=1920x1080x24
+ENV VNC_PASSWORD=vncpassword
+ENV CHROME_PERSISTENT_SESSION=true
+ENV RESOLUTION_WIDTH=1920
+ENV RESOLUTION_HEIGHT=1080
+ENV PORT=10000
+ENV HUGGINGFACE_TOKEN=changeme-token
+ENV LLM_MODEL_NAME=mistralai/Mistral-7B-Instruct-v0.1
+
+# ==== Supervisord ====
+RUN mkdir -p /var/log/supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# ==== Exposição de portas ====
+EXPOSE 7788 6080 5901 10000
+
+# ==== Start ====
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

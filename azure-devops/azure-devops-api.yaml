@@ -1,0 +1,298 @@
+openapi: 3.1.0
+info:
+  title: Azure DevOps Full Access API
+  version: 1.0.0
+  description: >
+    Acesso completo à API do Azure DevOps: gerenciamento de pipelines, builds,
+    repositórios, releases, testes e work items.
+servers:
+  - url: https://dev.azure.com/{organization}
+    description: Endpoint da organização no Azure DevOps
+paths:
+  /{project}/_apis/git/repositories:
+    get:
+      operationId: listAzureRepos
+      summary: Listar repositórios do projeto (Azure Repos ou GitHub conectados)
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema: { type: string }
+        - name: project
+          in: path
+          required: true
+          schema: { type: string }
+        - name: api-version
+          in: query
+          required: true
+          schema: { type: string }
+          example: '7.1-preview.1'
+      responses:
+        "200":
+          description: Repositórios retornados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count: { type: integer }
+                  value:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: string }
+                        name: { type: string }
+                        url: { type: string }
+
+  /{project}/_apis/pipelines:
+    get:
+      operationId: listPipelines
+      summary: Listar pipelines
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema: { type: string }
+        - name: project
+          in: path
+          required: true
+          schema: { type: string }
+        - name: api-version
+          in: query
+          required: true
+          schema: { type: string }
+          example: '7.1-preview.1'
+      responses:
+        "200":
+          description: Lista de pipelines
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count: { type: integer }
+                  value:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        name: { type: string }
+                        url: { type: string }
+
+  /{project}/_apis/pipelines/{pipelineId}/runs:
+    post:
+      operationId: runPipeline
+      summary: Iniciar execução de pipeline
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema: { type: string }
+        - name: project
+          in: path
+          required: true
+          schema: { type: string }
+        - name: pipelineId
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: api-version
+          in: query
+          required: true
+          schema: { type: string }
+          example: '7.1-preview.1'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resources:
+                  type: object
+                  additionalProperties: true
+      responses:
+        "200":
+          description: Pipeline iniciado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: integer }
+                  state: { type: string }
+                  result: { type: string }
+
+    get:
+      operationId: getPipelineRuns
+      summary: Ver execuções anteriores
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema: { type: string }
+        - name: project
+          in: path
+          required: true
+          schema: { type: string }
+        - name: pipelineId
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: api-version
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Histórico de execuções
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count: { type: integer }
+                  value:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        state: { type: string }
+                        result: { type: string }
+                        createdDate: { type: string, format: date-time }
+
+  /{project}/_apis/build/builds:
+    get:
+      operationId: listBuilds
+      summary: Listar builds
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema: { type: string }
+        - name: project
+          in: path
+          required: true
+          schema: { type: string }
+        - name: api-version
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Lista de builds
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count: { type: integer }
+                  value:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        buildNumber: { type: string }
+                        status: { type: string }
+                        result: { type: string }
+
+  /{project}/_apis/release/releases:
+    post:
+      operationId: createRelease
+      summary: Criar nova release
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema: { type: string }
+        - name: project
+          in: path
+          required: true
+          schema: { type: string }
+        - name: api-version
+          in: query
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                definitionId: { type: integer }
+                description: { type: string }
+                artifacts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      alias: { type: string }
+                      instanceReference:
+                        type: object
+                        properties:
+                          id: { type: string }
+                          name: { type: string }
+      responses:
+        "200":
+          description: Release criada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: integer }
+                  name: { type: string }
+                  status: { type: string }
+
+  /{project}/_apis/wit/workitems/${type}:
+    post:
+      operationId: createWorkItem
+      summary: Criar Work Item (Bug, Task, Epic, etc.)
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema: { type: string }
+        - name: project
+          in: path
+          required: true
+          schema: { type: string }
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [Bug, Task, Epic, Feature]
+        - name: api-version
+          in: query
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  op: { type: string }
+                  path: { type: string }
+                  from: { type: string }
+                  value: {}
+      responses:
+        "200":
+          description: Work item criado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: integer }
+                  fields:
+                    type: object

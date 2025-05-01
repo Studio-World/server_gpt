@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_model": "azureDevOpsPlugin",
+  "name_for_human": "Azure DevOps Full Access",
+  "description_for_model": "Permite interações completas com a API do Azure DevOps, incluindo repositórios, builds, pipelines, releases, testes e work items.",
+  "description_for_human": "Controle total do Azure DevOps com builds, releases e CI/CD via ChatGPT.",
+  "auth": {
+    "type": "bearer"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://SEU_DOMINIO/azure-devops/azure-devops-api.yaml"
+  },
+  "logo_url": "https://learn.microsoft.com/en-us/media/logos/logo-ms-social.png",
+  "contact_email": "contato@exemplo.com",
+  "legal_info_url": "https://learn.microsoft.com/en-us/azure/devops/"
+}

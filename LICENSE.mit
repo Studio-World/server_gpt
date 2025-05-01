@@ -1,0 +1,35 @@
+
+---
+
+## 📄 `dan_memory_sqlite.py`
+
+```python
+import sqlite3
+from datetime import datetime
+
+DB_PATH = "memory.db"
+
+def fetch_all():
+    conn = sqlite3.connect(DB_PATH)
+    rows = conn.execute("SELECT * FROM memory ORDER BY id DESC").fetchall()
+    conn.close()
+    return [
+        {"id": r[0], "prompt": r[1], "response": r[2], "timestamp": r[3]}
+        for r in rows
+    ]
+
+def insert(prompt, response):
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("INSERT INTO memory (prompt, response) VALUES (?, ?)", (prompt, response))
+    conn.commit()
+    conn.close()
+
+def export_txt(filename="memory_export.txt"):
+    logs = fetch_all()
+    with open(filename, "w", encoding="utf-8") as f:
+        for item in logs:
+            f.write(f"[{item['timestamp']}] {item['prompt']} -> {item['response']}\n")
+    print(f"Exportação concluída: {filename}")
+
+if __name__ == "__main__":
+    export_txt()

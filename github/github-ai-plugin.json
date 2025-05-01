@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_model": "githubPlugin",
+  "name_for_human": "GitHub Actions Full Access",
+  "description_for_model": "Acesso completo à API do GitHub para criar, atualizar e publicar arquivos, issues, PRs, releases, Codespaces e execuções de workflows.",
+  "description_for_human": "Integração com a API do GitHub para controle total de projetos.",
+  "auth": {
+    "type": "bearer"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://SEU_DOMINIO/github/github-api.yaml"
+  },
+  "logo_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+  "contact_email": "contato@exemplo.com",
+  "legal_info_url": "https://github.com/github"
+}

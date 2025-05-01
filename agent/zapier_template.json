@@ -1,0 +1,26 @@
+{
+  "steps": [
+    {
+      "name": "Receber evento do Zapier",
+      "type": "webhook",
+      "url": "https://server-apig-gpt-1.onrender.com/zapier/webhook-trigger",
+      "method": "POST",
+      "headers": {
+        "X-Zapier-Token": "zapier123"
+      },
+      "body": {
+        "event": "start_script"
+      }
+    },
+    {
+      "name": "Chama automatizacao",
+      "type": "fastapi",
+      "url": "http://localhost:7000/auto",
+      "method": "POST",
+      "body": {
+        "comand": "open_browser",
+        "url": "https://www.google.com"
+      }
+    }
+  ]
+}

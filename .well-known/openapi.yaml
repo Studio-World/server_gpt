@@ -1,0 +1,458 @@
+openapi: 3.1.0
+info:
+  title: API do DAN
+  description: API multifuncional com integração a IA, GitHub, Google Drive, Azure DevOps, automação, Zapier e Render.com.
+  version: "1.0"
+
+servers:
+  - url: https://server-apig-gpt-1.onrender.com
+    description: Servidor principal da API do DAN
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas: {}
+
+paths:
+  /:
+    get:
+      operationId: statusAPI
+      summary: Verifica se a API está ativa
+      responses:
+        '200':
+          description: Status da API
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+
+  /health:
+    get:
+      operationId: healthCheck
+      summary: Verifica se o servidor está saudável.
+      responses:
+        '200':
+          description: Servidor ativo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+
+  /v1/completions:
+    post:
+      operationId: gerarResposta
+      summary: Gera uma resposta baseada em um prompt.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prompt:
+                  type: string
+      responses:
+        '200':
+          description: Resposta gerada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+
+  /memory/export:
+    get:
+      operationId: exportarMemoria
+      summary: Exporta o histórico de interações salvas na memória.
+      responses:
+        '200':
+          description: Lista de logs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        prompt:
+                          type: string
+                        response:
+                          type: string
+                        timestamp:
+                          type: string
+
+  /drive/list:
+    get:
+      operationId: listarArquivosDrive
+      summary: Lista arquivos do Google Drive.
+      parameters:
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Lista de arquivos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  files:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        mimeType:
+                          type: string
+
+  /drive/file/{file_id}:
+    get:
+      operationId: detalhesArquivoDrive
+      summary: Obtém metadados de um arquivo do Google Drive.
+      parameters:
+        - name: file_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Metadados do arquivo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  mimeType:
+                    type: string
+
+  /drive/file/{file_id}/download:
+    get:
+      operationId: baixarArquivoDrive
+      summary: Faz o download de um arquivo do Google Drive.
+      parameters:
+        - name: file_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Arquivo em fluxo binário
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+
+  /drive/file/{file_id}/delete:
+    delete:
+      operationId: deletarArquivoDrive
+      summary: Deleta um arquivo do Google Drive.
+      parameters:
+        - name: file_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Status da operação
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  code:
+                    type: integer
+
+  /github/repos:
+    get:
+      operationId: listarRepositoriosGitHub
+      summary: Lista os repositórios do usuário no GitHub.
+      responses:
+        '200':
+          description: Lista de repositórios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    full_name:
+                      type: string
+
+  /github/repos/{owner}/{repo}/issues:
+    post:
+      operationId: criarIssueGitHub
+      summary: Cria uma issue em um repositório do GitHub.
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                body:
+                  type: string
+      responses:
+        '200':
+          description: Issue criada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  url:
+                    type: string
+                  title:
+                    type: string
+
+  /azure/repos/{organization}/{project}:
+    get:
+      operationId: listarRepositoriosAzure
+      summary: Lista repositórios em um projeto Azure DevOps.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de repositórios Azure
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+
+  /azure/builds/{organization}/{project}:
+    get:
+      operationId: listarBuildsAzure
+      summary: Lista builds em um projeto Azure DevOps.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Builds do projeto
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        status:
+                          type: string
+                        result:
+                          type: string
+
+  /automation/playwright:
+    post:
+      operationId: automacaoPlaywright
+      summary: Executa automação com Playwright.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: URL a ser acessada pelo navegador Playwright
+      responses:
+        '200':
+          description: Conteúdo extraído
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  content:
+                    type: string
+
+  /automation/selenium:
+    post:
+      operationId: automacaoSelenium
+      summary: Executa automação com Selenium.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: URL a ser acessada pelo navegador Selenium
+      responses:
+        '200':
+          description: Conteúdo extraído
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  content:
+                    type: string
+
+  /render/services:
+    get:
+      operationId: listarServicosRender
+      summary: Lista todos os serviços disponíveis na conta Render.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de serviços da Render
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  services:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        serviceDetails:
+                          type: object
+
+  /render/services/{service_id}:
+    get:
+      operationId: detalhesServicoRender
+      summary: Detalha informações de um serviço específico da Render.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: service_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalhes do serviço
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  status:
+                    type: string
+
+  /render/services/{service_id}/deploys:
+    post:
+      operationId: iniciarDeployRender
+      summary: Inicia um novo deploy para o serviço especificado na Render.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: service_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deploy iniciado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  status:
+                    type: string

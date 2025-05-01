@@ -1,0 +1,50 @@
+# Variáveis de ambiente
+.env
+.env.*
+
+# Banco de dados
+*.db
+*.sqlite
+memory.db
+/mnt/data/*.db
+
+# Cache Python e artefatos compilados
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Configurações de IDEs
+.vscode/
+.idea/
+
+# Ambientes virtuais
+.venv/
+venv/
+
+# Logs e temporários
+*.log
+*.tmp
+*.bak
+*.swp
+nohup.out
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Build / distribuição
+dist/
+build/
+*.egg-info
+
+# Dados do navegador
+/ms-playwright
+chrome_data/
+browser_use_data/
+
+# Chrome debugging e VNC
+*.pid
+*.sock
+
+# Cache Gradio
+gradio_cached_examples/

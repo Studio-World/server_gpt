@@ -1,0 +1,193 @@
+openapi: 3.1.0
+info:
+  title: DanGPT Discord Bot API
+  description: API do bot DanGPT para moderação, mensagens e gerenciamento do servidor Discord com permissões administrativas.
+  version: 2.0.0
+servers:
+  - url: https://discord.com/api/v10
+    description: Discord REST API
+paths:
+  /channels/{channel_id}/messages:
+    post:
+      operationId: sendMessageToChannel
+      summary: Envia uma mensagem de texto para um canal
+      parameters:
+        - name: channel_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content:
+                  type: string
+      responses:
+        '200':
+          description: Mensagem enviada com sucesso
+
+  /channels/{channel_id}/messages/search:
+    get:
+      operationId: searchMessagesInChannel
+      summary: Pesquisa mensagens por palavra-chave em um canal
+      parameters:
+        - name: channel_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: include_nsfw
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Mensagens encontradas
+
+  /guilds/{guild_id}/members:
+    get:
+      operationId: listGuildMembers
+      summary: Lista membros do servidor
+      parameters:
+        - name: guild_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 25
+      responses:
+        '200':
+          description: Lista de membros
+
+  /guilds/{guild_id}/members/{user_id}:
+    delete:
+      operationId: kickUser
+      summary: Expulsa um usuário do servidor
+      parameters:
+        - name: guild_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Usuário expulso
+
+  /guilds/{guild_id}/bans/{user_id}:
+    put:
+      operationId: banUser
+      summary: Bane um usuário do servidor
+      parameters:
+        - name: guild_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: delete_message_days
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '204':
+          description: Usuário banido
+
+    delete:
+      operationId: unbanUser
+      summary: Remove o banimento de um usuário
+      parameters:
+        - name: guild_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Banimento removido
+
+  /guilds/{guild_id}:
+    get:
+      operationId: getGuildInfo
+      summary: Retorna informações sobre o servidor
+      parameters:
+        - name: guild_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dados do servidor
+
+  /guilds/{guild_id}/channels:
+    post:
+      operationId: createChannel
+      summary: Cria um novo canal no servidor
+      parameters:
+        - name: guild_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, type]
+              properties:
+                name:
+                  type: string
+                type:
+                  type: integer
+                  description: |
+                    0 = texto, 2 = voz, 4 = categoria, 5 = anúncio, 13 = stage
+                  enum: [0, 2, 4, 5, 13]
+      responses:
+        '200':
+          description: Canal criado
+
+components:
+  securitySchemes:
+    BotAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Bot
+  schemas: {}  # 👈 Isso corrige o erro esperado por alguns validadores
+
+security:
+  - BotAuth: []

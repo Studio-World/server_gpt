@@ -1,0 +1,680 @@
+openapi: 3.1.0
+info:
+  title: GitHub Full Access API
+  version: 1.3.1
+  description: >
+    Integração completa com a API do GitHub, incluindo repositórios, arquivos, branches, pull requests, issues,
+    releases, Codespaces e GitHub Actions.
+servers:
+  - url: https://api.github.com
+paths:
+  /repos/{owner}/{repo}:
+    get:
+      operationId: getRepoInfo
+      summary: Obter informações do repositório
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Login do proprietário do repositório
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nome do repositório
+      responses:
+        "200":
+          description: Dados do repositório
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Repository"
+  /repos/{owner}/{repo}/contents/{path}:
+    get:
+      operationId: getRepoContent
+      summary: Listar ou obter conteúdo de um caminho
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Caminho relativo dentro do repositório
+        - name: ref
+          in: query
+          schema:
+            type: string
+          description: Nome do branch ou SHA
+      responses:
+        "200":
+          description: Conteúdo do diretório ou arquivo
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/ContentItem"
+                  - $ref: "#/components/schemas/ContentItem"
+    put:
+      operationId: createOrUpdateFile
+      summary: Criar ou atualizar um arquivo
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Caminho do arquivo a criar/atualizar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+                - content
+              properties:
+                message:
+                  type: string
+                  description: Mensagem de commit
+                content:
+                  type: string
+                  description: Conteúdo do arquivo em Base64
+                branch:
+                  type: string
+                  description: "Branch de destino (padrão: default branch)"
+                sha:
+                  type: string
+                  description: SHA do arquivo existente (somente para atualização)
+      responses:
+        "201":
+          description: Arquivo criado ou atualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: object
+                  commit:
+                    type: object
+  /repos/{owner}/{repo}/issues:
+    get:
+      operationId: listRepoIssues
+      summary: Listar issues do repositório
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Login do proprietário do repositório
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nome do repositório
+        - name: state
+          in: query
+          schema:
+            type: string
+            enum:
+              - open
+              - closed
+              - all
+          description: Filtrar por estado
+      responses:
+        "200":
+          description: Lista de issues
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Issue"
+    post:
+      operationId: createIssue
+      summary: Criar nova issue
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Login do proprietário do repositório
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nome do repositório
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IssueRequest"
+      responses:
+        "201":
+          description: Issue criada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Issue"
+  /repos/{owner}/{repo}/pulls:
+    get:
+      operationId: listPullRequests
+      summary: Listar pull requests
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Login do proprietário do repositório
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nome do repositório
+        - name: state
+          in: query
+          schema:
+            type: string
+            enum:
+              - open
+              - closed
+              - all
+          description: Filtrar por estado
+      responses:
+        "200":
+          description: Lista de pull requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PullRequest"
+    post:
+      operationId: createPullRequest
+      summary: Criar novo pull request
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Login do proprietário do repositório
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nome do repositório
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PullRequestRequest"
+      responses:
+        "201":
+          description: Pull request criada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PullRequestResponse"
+  /repos/{owner}/{repo}/releases:
+    post:
+      operationId: createRelease
+      summary: Criar nova release
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Login do proprietário do repositório
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nome do repositório
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReleaseRequest"
+      responses:
+        "201":
+          description: Release criada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Release"
+  /repos/{owner}/{repo}/codespaces:
+    get:
+      operationId: listCodespaces
+      summary: Listar Codespaces ativos
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Login do proprietário do repositório
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nome do repositório
+      responses:
+        "200":
+          description: Lista de Codespaces
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodespaceList"
+  /repos/{owner}/{repo}/actions/runs:
+    get:
+      operationId: listWorkflowRuns
+      summary: Listar execuções de GitHub Actions
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Login do proprietário do repositório
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nome do repositório
+      responses:
+        "200":
+          description: Lista de execuções
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowRunList"
+  /repos/{owner}/{repo}/branches:
+    get:
+      operationId: listBranches
+      summary: Listar branches do repositório
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Login do proprietário do repositório
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nome do repositório
+      responses:
+        "200":
+          description: Lista de branches
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Branch"
+  /repos/{owner}/{repo}/collaborators:
+    get:
+      operationId: listCollaborators
+      summary: Listar colaboradores do repositório
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Login do proprietário do repositório
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nome do repositório
+      responses:
+        "200":
+          description: Lista de colaboradores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Collaborator"
+  /repos/{owner}/{repo}/commits:
+    get:
+      operationId: listCommits
+      summary: Listar commits do repositório
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Login do proprietário do repositório
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nome do repositório
+        - name: sha
+          in: query
+          schema:
+            type: string
+          description: SHA ou branch para iniciar a listagem
+        - name: path
+          in: query
+          schema:
+            type: string
+          description: Caminho relativo dentro do repositório
+      responses:
+        "200":
+          description: Lista de commits
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Commit"
+  /repos/{owner}/{repo}/hooks:
+    get:
+      operationId: listWebhooks
+      summary: Listar webhooks do repositório
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Login do proprietário do repositório
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nome do repositório
+      responses:
+        "200":
+          description: Lista de webhooks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Webhook"
+components:
+  schemas:
+    Repository:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        full_name:
+          type: string
+        private:
+          type: boolean
+    ContentItem:
+      type: object
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        type:
+          type: string
+        sha:
+          type: string
+        size:
+          type: integer
+        url:
+          type: string
+    FileUpdateRequest:
+      type: object
+      required:
+        - message
+        - content
+      properties:
+        message:
+          type: string
+          description: Mensagem de commit
+        content:
+          type: string
+          description: Conteúdo do arquivo em Base64
+        branch:
+          type: string
+          description: "Branch de destino (padrão: default branch)"
+        sha:
+          type: string
+          description: SHA do arquivo existente (somente para atualização)
+    FileUpdateResponse:
+      type: object
+      properties:
+        content:
+          type: object
+        commit:
+          type: object
+    Issue:
+      type: object
+      properties:
+        number:
+          type: integer
+        title:
+          type: string
+        state:
+          type: string
+    IssueRequest:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+        labels:
+          type: array
+          items:
+            type: string
+    PullRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        title:
+          type: string
+        state:
+          type: string
+    PullRequestRequest:
+      type: object
+      required:
+        - title
+        - head
+        - base
+      properties:
+        title:
+          type: string
+        head:
+          type: string
+        base:
+          type: string
+        body:
+          type: string
+    PullRequestResponse:
+      type: object
+      properties:
+        number:
+          type: integer
+        title:
+          type: string
+    Release:
+      type: object
+      properties:
+        id:
+          type: integer
+        html_url:
+          type: string
+    ReleaseRequest:
+      type: object
+      required:
+        - tag_name
+        - name
+      properties:
+        tag_name:
+          type: string
+        name:
+          type: string
+        body:
+          type: string
+    CodespaceList:
+      type: object
+      properties:
+        total_count:
+          type: integer
+        codespaces:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              state:
+                type: string
+    WorkflowRunList:
+      type: object
+      properties:
+        total_count:
+          type: integer
+        workflow_runs:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              status:
+                type: string
+              conclusion:
+                type: string
+              created_at:
+                type: string
+                format: date-time
+    Branch:
+      type: object
+      properties:
+        name:
+          type: string
+        commit:
+          type: object
+          properties:
+            sha:
+              type: string
+            url:
+              type: string
+    Collaborator:
+      type: object
+      properties:
+        login:
+          type: string
+        id:
+          type: integer
+        permissions:
+          type: object
+          properties:
+            admin:
+              type: boolean
+            push:
+              type: boolean
+            pull:
+              type: boolean
+    Commit:
+      type: object
+      properties:
+        sha:
+          type: string
+        commit:
+          type: object
+          properties:
+            message:
+              type: string
+            author:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                date:
+                  type: string
+                  format: date-time
+    Webhook:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        active:
+          type: boolean
+        config:
+          type: object
+          properties:
+            url:
+              type: string
+            content_type:
+              type: string
+            secret:
+              type: string
+  securitySchemes:
+    githubBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: token
+security:
+  - githubBearer: []

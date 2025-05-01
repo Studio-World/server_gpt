@@ -1,0 +1,22 @@
+project/
+│
+├── main.py
+├── start.sh
+├── render.yaml
+├── requirements.txt
+├── .env.example
+├── discord_bot.py
+│
+├── github/
+│   ├── github-api.yaml
+│   └── github-ai-plugin.json
+│
+├── azure-devops/
+│   ├── azure-devops-api.yaml
+│   └── azure-ai-plugin.json
+│
+├── google-drive/
+│   └── google-drive-api.yaml   ✅
+│
+├── discord/
+│   └── discord-api.yaml        ✅
