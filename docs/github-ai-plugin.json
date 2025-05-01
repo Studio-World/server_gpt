@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "GitHub API",
+  "name_for_model": "github_api",
+  "description_for_human": "Consultar dados do GitHub, repositórios, issues e mais.",
+  "description_for_model": "Plugin para acessar dados públicos do GitHub usando endpoints OpenAPI. Permite consultar repositórios, issues, pull requests, perfis de usuários e mais.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://carlosdev.app.br/api.github.com.yaml",
+    "is_user_authenticated": false
+  },
+  "logo_url": "https://carlosdev.app.br/logo.png",
+  "contact_email": "contato@carlosdev.app.br",
+  "legal_info_url": "https://carlosdev.app.br/privacidade.html"
+}
