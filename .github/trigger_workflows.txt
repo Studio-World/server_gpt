@@ -1,0 +1,1 @@
+Simulação de workflows automatizados de boot e varredura
