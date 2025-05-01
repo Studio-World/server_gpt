@@ -1,0 +1,20 @@
+name: Bootstrap Memory
+
+on-push:
+  run: read_memory
+
+exports:
+  bootstrap_memory: true
+
+runs:
+  read_memory:
+    name: Reload Memory inteligencia
+    runs: |
+    - name: Pull memory_merged.db
+      run: curl -L historic/memory_merged.db | base64 -di -o runtime/cache_memory.json
+      env: 
+        MEMORY_DB_PATH: historic/memory_merged.db
+        MEMORY_JSON_FILE: runtime/cache_memory.json
+
+    - name: Atualizar enveniments
+      run: echo "Variavel memoria descompressada" && cat $MEMORY_JSON_FILE
