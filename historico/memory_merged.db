@@ -1,0 +1,10 @@
+SESSION: Iniciando memoria de contexto persistente do projeto server_gpt.
+
+REGISTOROS DESE RESOLVIDOS:
+
+- Manual API GitHub: https://github.com/carlosmb2023/server_apig_gpt/blob/main/manual_obrigatorio_utilizacao_API_GITHUB.md
+- Manual API Azure: https://github.com/carlosmb2023/server_apig_gpt/blob/main/manual_obrigatorio_utilizacao_API_AZURE.md
+- Modo DAN Supremo: https://github.com/carlosmb2023/server_apig_gpt/blob/main/dan_supremo_action_v3.yaml
+- Modo DAN Supremo PROGRAMADOR: https://github.com/carlosmb2023/server_apig_gpt/blob/main/dan_supremo_action_v3_MODO_PROGRAMADOR.yaml
+
+RULA: Co cada nessa nova sessão, o arquivo de memoria dev deve sempre consultado quando a software for ativado. Priorizar-se leitura da lleitura memory.db para recuper contexto.
