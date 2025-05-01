@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chat with Carlos dev</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <!-- Google Fonts for modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg-metal: linear-gradient(120deg, #50535a 0%, #888d94 100%);
+        --chat-bg: #23272f;
+        --input-bg: #353740;
+        --border: #3c3f45;
+        --main-radius: 16px;
+        --user-msg: #23272f;
+        --assistant-msg: #353740;
+        --user-bubble: #8e949e;
+        --assistant-bubble: #c5c8ce;
+        --send-btn-bg: #5a5c5f;
+        --send-btn-hover: #222326;
+        --text-main: #f3f3f3;
+        --text-light: #dadada;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        background: var(--bg-metal);
+        font-family: 'Inter', Arial, Helvetica, sans-serif;
+        color: var(--text-main);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        height: 100vh;
+        width: 100vw;
+        max-width: 100vw;
+        padding: 0;
+      }
+
+      .chat-header {
+        text-align: center;
+        padding: 2.5rem 0 1.2rem 0;
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--text-main);
+        letter-spacing: 1px;
+        opacity: 0.95;
+      }
+
+      .chat-container {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        width: 100vw;
+        max-width: 650px;
+        margin: 0 auto;
+        padding: 0 1rem 1.6rem 1rem;
+        overflow-y: auto;
+        background: var(--chat-bg);
+        border-radius: var(--main-radius) var(--main-radius) 0 0;
+        box-shadow: 0 8px 40px 0 rgba(0,0,0,0.30);
+        border: 1px solid var(--border);
+      }
+
+      .message {
+        padding: 1.05rem 1.4rem;
+        margin: 0.6em 0;
+        line-height: 1.6;
+        border-radius: 12px;
+        max-width: 82%;
+        font-size: 1rem;
+        word-break: break-word;
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,0.02);
+      }
+
+      .message.user {
+        align-self: flex-end;
+        background: var(--user-bubble);
+        color: var(--user-msg);
+      }
+
+      .message.assistant {
+        align-self: flex-start;
+        background: var(--assistant-bubble);
+        color: var(--assistant-msg);
+      }
+
+      .input-area {
+        display: flex;
+        align-items: center;
+        width: 100vw;
+        max-width: 650px;
+        margin: 0 auto;
+        padding: 1rem 1.5rem 1.5rem 1.5rem;
+        background: transparent;
+        border-radius: 0 0 var(--main-radius) var(--main-radius);
+        box-sizing: border-box;
+      }
+
+      .input-area input[type="text"] {
+        flex: 1 1 auto;
+        padding: 1.1rem 1.2rem;
+        background: var(--input-bg);
+        color: var(--text-light);
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        font-size: 1.08rem;
+        outline: none;
+        margin-right: 1.1rem;
+        transition: border 0.2s;
+      }
+      .input-area input[type="text"]:focus {
+        border-color: #888d94;
+      }
+
+      .input-area button {
+        padding: 0.9rem 2.1rem;
+        background: var(--send-btn-bg);
+        color: var(--text-main);
+        border: none;
+        border-radius: 7px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.18s;
+      }
+      .input-area button:hover {
+        background: var(--send-btn-hover);
+      }
+
+      @media (max-width: 700px) {
+        .chat-container, .input-area {
+          max-width: 100vw;
+          border-radius: 0;
+        }
+        .chat-header {
+          font-size: 1.3rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="chat-header">ChatGPT - Carlos Dev</div>
+      <div class="chat-container" id="chat">
+        <div class="message assistant">
+          Olá, seja bem-vindo ao Agente Chat/tool!
+        </div>
+      </div>
+      <form class="input-area" id="user-input" autocomplete="off" onsubmit="event.preventDefault(); sendMessage();">
+        <input type="text" id="input" placeholder="Digite sua mensagem..." autocomplete="off" />
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+    <script>
+      // Foca no input ao carregar
+      window.onload = () => document.getElementById("input").focus();
+
+      function sendMessage() {
+        const input = document.getElementById("input");
+        const text = input.value.trim();
+        if (!text) return;
+        // Cria a mensagem do usuário
+        const userMsg = document.createElement("div");
+        userMsg.className = "message user";
+        userMsg.textContent = text;
+        document.getElementById("chat").appendChild(userMsg);
+
+        // Simulação de resposta do assistente (customize como desejar)
+        setTimeout(() => {
+          const botMsg = document.createElement("div");
+          botMsg.className = "message assistant";
+          botMsg.textContent = "🤖 Em breve: resposta da IA para \"" + text + "\"";
+          document.getElementById("chat").appendChild(botMsg);
+          document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
+        }, 600);
+
+        input.value = "";
+        document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
+      }
+
+      // Enter envia a mensagem
+      document.getElementById("input").addEventListener("keydown", function(e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+    </script>
+  </body>
+</html>
