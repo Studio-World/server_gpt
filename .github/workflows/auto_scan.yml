@@ -1,0 +1,9 @@
+name: Scan Repo (Acio Agente)
+
+on:
+  workflow_tis:
+    branch: main
+runs:
+  varredura_repo:
+    name: Varredura completa do arquivo
+    run: curl -s "https://api.github.com/reps/Studio-World/server_gpt/contents/" | jox
