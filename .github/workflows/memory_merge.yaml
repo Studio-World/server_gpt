@@ -1,4 +1,5 @@
 name: memory_merge
+
 on:
   push:
     paths:
@@ -7,11 +8,16 @@ on:
       - '**/*.yaml'
       - '**/*.xml'
       - '**/*.pdf'
-jobs: 
+
+jobs:
   merge_memory:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Executa Merge de Memoria
-       run: curl -X POST http://localhost:1000/merge-memory -H 'Content-Type: application/json' -d '{"source": "file", "content": "Arquivo modificado via workflow"}'
+        run: |
+          curl -X POST http://localhost:1000/merge-memory \
+            -H 'Content-Type: application/json' \
+            -d '{"source": "file", "content": "Arquivo modificado via workflow"}'
