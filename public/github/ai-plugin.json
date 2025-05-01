@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_model": "gh_master_ops",
+  "name_for_human": "GitHub Master Plugin",
+  "description_for_model": "Executa alumas a requisições da API do GitHub sob demanda usando token full access.",
+  "description_for_human": "Plugin root que executa operaçáes administrativas com token total via OpenAPI completo.",
+  "auth": {
+    "type": "service_http",
+    "authorization_type": "bearer"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://carlosdev.app.br/github/api.github.com.yaml"
+  },
+  "logo_url": "https://avatars.githubusercontent.com/u/9919?s=200&v=4",
+  "contact_email": "root@carlosdev.app.br",
+  "legal_info_url": "https://carlosdev.app.br/legal"
+}
