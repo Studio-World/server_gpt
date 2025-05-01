@@ -7,14 +7,14 @@ exports:
   bootstrap_memory: true
 
 runs:
-  read_memory:
-    name: Reload Memory inteligencia
-    runs: |
-    - name: Pull memory_merged.db
-      run: curl -L historic/memory_merged.db | base64 -di -o runtime/cache_memory.json
-      env: 
-        MEMORY_DB_PATH: historic/memory_merged.db
-        MEMORY_JSON_FILE: runtime/cache_memory.json
+  - name: Preparar Scan do Repositção
+    run: curl -s "https://api.github.com/reps/Studio-World/server_gpt/contents/"
 
-    - name: Atualizar enveniments
-      run: echo "Variavel memoria descompressada" && cat $MEMORY_JSON_FILE
+  - name: Reload Memory inteligencia
+    run: cat  historic/memory_merged.db | base64 -d > runtime/cache_memory.json
+    env :
+      MEMORY_DB_PATH:historic/memory_merged.db
+      MEMORY_JSON_FILE:runtime/cache_memory.json
+
+  - name: Atualizar enveniments
+    run: echo "Variavel memoria descompressada" && cat $MEMORY_JSON_FILE
