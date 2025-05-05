@@ -1,41 +1,41 @@
-# Ignorar diretórios de dados locais e temporários
-data
-tmp
+# === DADOS E TEMPORÁRIOS ===
+data/
+tmp/
+logs/
 
-# Python cache
+# === PYTHON CACHE & METADADOS ===
 __pycache__/
 *.py[cod]
 *.so
+*.egg-info/
+.eggs/
 
-# Arquivos e pastas ocultas
-.* 
+# === OCULTOS (EXCETO .dockerignore) ===
+.*
 !.dockerignore
 
-# Logs
+# === LOGS E ARQUIVOS DE RUNTIME ===
 *.log
+*.pid
+*.sock
 
-# Node.js
-node_modules
+# === NODE.JS / JAVASCRIPT ===
+node_modules/
 
-# Navegadores baixados
-ms-playwright
+# === NAVEGADORES E PLAYWRIGHT CACHE ===
+ms-playwright/
+.chromium/
 
-# Editor/IDE configs
-.vscode
-.idea
+# === IDEs / CONFIGS DE EDITOR ===
+.vscode/
+.idea/
 
-# Cache de build
+# === BUILD E ARTIFATOS ===
 build/
 dist/
-.eggs/
-*.egg-info
 
-# Arquivos temporários
+# === SWAP / SISTEMA ===
 *.swp
 *.swo
 .DS_Store
 Thumbs.db
-
-# Supervisord
-*.pid
-*.sock
