@@ -10,57 +10,45 @@ services:
       args:
         TARGETPLATFORM: ${TARGETPLATFORM:-linux/amd64}
     ports:
-      - "10000:10000"  # API FastAPI do Projeto DAN
-      - "7788:7788"    # Gradio interface (browser-use)
-      - "6080:6080"    # noVNC UI
-      - "5901:5901"    # VNC server
-      - "9222:9222"    # Chrome Remote Debugging
+      - "10000:10000"   # FastAPI
+      - "7788:7788"     # Gradio / browser-use
+      - "6080:6080"     # noVNC UI
+      - "5901:5901"     # VNC Server
+      - "9222:9222"     # Chrome Dev Tools
     environment:
       # === API KEYS / ENDPOINTS ===
       - OPENAI_ENDPOINT=${OPENAI_ENDPOINT:-https://api.openai.com/v1}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
-      - ANTHROPIC_ENDPOINT=${ANTHROPIC_ENDPOINT:-https://api.anthropic.com}
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
       - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-}
       - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-}
-      - DEEPSEEK_ENDPOINT=${DEEPSEEK_ENDPOINT:-https://api.deepseek.com}
-      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
-      - OLLAMA_ENDPOINT=${OLLAMA_ENDPOINT:-http://localhost:11434}
-      - MISTRAL_API_KEY=${MISTRAL_API_KEY:-}
-      - MISTRAL_ENDPOINT=${MISTRAL_ENDPOINT:-https://api.mistral.ai/v1}
-      - ALIBABA_ENDPOINT=${ALIBABA_ENDPOINT:-https://dashscope.aliyuncs.com/compatible-mode/v1}
-      - ALIBABA_API_KEY=${ALIBABA_API_KEY:-}
-      - MOONSHOT_ENDPOINT=${MOONSHOT_ENDPOINT:-https://api.moonshot.cn/v1}
-      - MOONSHOT_API_KEY=${MOONSHOT_API_KEY:-}
-
-      # === DAN E LLM ===
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
       - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN:-}
       - LLM_MODEL_NAME=${LLM_MODEL_NAME:-mistralai/Mistral-7B-Instruct-v0.1}
-      - PORT=10000
 
-      # === browser-use + chrome ===
-      - BROWSER_USE_LOGGING_LEVEL=${BROWSER_USE_LOGGING_LEVEL:-info}
-      - ANONYMIZED_TELEMETRY=${ANONYMIZED_TELEMETRY:-false}
-      - CHROME_PATH=/usr/bin/google-chrome
+      # === browser-use / playwright ===
+      - BROWSER_USE_LOGGING_LEVEL=info
+      - ANONYMIZED_TELEMETRY=false
+      - DISPLAY=:99
+      - CHROME_PATH=/mnt/data/ms-playwright/chromium-*/chrome-linux/chrome
       - CHROME_USER_DATA=/app/data/chrome_data
-      - CHROME_PERSISTENT_SESSION=${CHROME_PERSISTENT_SESSION:-false}
-      - CHROME_CDP=${CHROME_CDP:-http://localhost:9222}
+      - CHROME_CDP=http://localhost:9222
       - CHROME_DEBUGGING_PORT=9222
       - CHROME_DEBUGGING_HOST=localhost
+      - CHROME_PERSISTENT_SESSION=true
+      - PLAYWRIGHT_BROWSERS_PATH=/mnt/data/ms-playwright
 
-      # === Resolução de tela e Playwright ===
-      - DISPLAY=:99
-      - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
-      - RESOLUTION=${RESOLUTION:-1920x1080x24}
-      - RESOLUTION_WIDTH=${RESOLUTION_WIDTH:-1920}
-      - RESOLUTION_HEIGHT=${RESOLUTION_HEIGHT:-1080}
+      # === Tela e VNC ===
       - VNC_PASSWORD=${VNC_PASSWORD:-vncpassword}
+      - RESOLUTION=1920x1080x24
+      - RESOLUTION_WIDTH=1920
+      - RESOLUTION_HEIGHT=1080
+      - PORT=10000
 
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./data:/app/data
       - ./logs:/var/log/supervisor
+      - ./public_yaml:/home/carlos/public_yaml
     restart: unless-stopped
     shm_size: '2gb'
     cap_add:
