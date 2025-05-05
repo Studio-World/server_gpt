@@ -1,24 +1,32 @@
-playwright==1.51.0
-selenium==4.31.0
-fastapi==0.115.12
-uvicorn==0.34.2
-requests==2.32.3
-aiofiles==23.2.1
-python-multipart==0.0.20
-discord.py==2.5.2
+# Navegador e Automação
+playwright==1.39.0
+selenium==4.27.1
 chromedriver-autoinstaller==0.6.4
-watchdog==6.0.0
+watchdog==3.0.0
 
-# Compatibilidade entre langchain-core e extensões
-browser-use==0.1.41
-langchain-mistralai==0.2.10
+# Web / API
+fastapi==0.115.1
+uvicorn==0.23.2
+aiofiles==23.2.1
+python-multipart==0.0.9
+requests==2.32.2
 
-pyperclip==1.9.0
-gradio==4.44.1
-json-repair==0.42.0
-MainContentExtractor==0.0.4
-
+# IA e LLMs
 transformers==4.51.3
 torch==2.7.0
 accelerate==1.6.0
 huggingface-hub==0.30.2
+
+# LangChain / Agents
+langchain-mistralai==0.2.10
+pyperclip==1.9.0
+json-repair==0.42.0
+MainContentExtractor==0.0.4
+
+# Front-End e Interface
+gradio==4.44.1
+discord.py==2.3.2
+
+# ⚠️ browser-use: será instalado manualmente via Dockerfile
+# browser-use==0.1.41 → removido do arquivo, instalado via pip install "browser-use"
+
